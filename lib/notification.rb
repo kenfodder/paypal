@@ -261,10 +261,9 @@ jZJTylbJQ1b5PBBjGiP0PpK48cdF
     # Take the posted data and move the relevant data into a hash
     def parse(post)
       @raw = post
-      for line in post.split('&')    
-        key, value = *line.scan( %r{^(\w+)\=(.*)$} ).flatten
-        params[key] = CGI.unescape(value)
-      end
+      self.params = Rack::Utils.parse_query(post)
+      # Rack allows duplicate keys in queries, we need to use only the last value here
+      self.params.each{|k,v| self.params[k] = v.last if v.is_a?(Array)}
     end
 
   end
